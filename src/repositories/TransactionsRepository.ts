@@ -26,37 +26,23 @@ class TransactionsRepository {
 	}
 
 	public getBalance(): Balance {
-		const groupBy: number[] = this.transactions.reduce((acc, curr) => {
-			const key = curr.type;
-			(acc[key] = acc[key] || []).push(curr.value);
-			return acc;
-		}, Object.create(null));
-
-		console.log(groupBy);
-
-		const arrayIncome: number[] = groupBy.income;
-		const arrayOutcome: number[] = groupBy.outcome;
-
-		console.log(arrayIncome);
-		console.log(arrayOutcome);
-
-		const income = arrayIncome.reduce((acc, curr) => {
-			return acc + curr;
-		});
-
-		const outcome = arrayOutcome.reduce((acc, curr) => {
-			return acc + curr;
-		});
-		console.log(income);
-		console.log(outcome);
-
-		const total = income - outcome;
-
-		const balance = {
-			income,
-			outcome,
-			total
-		};
+		const balance = this.transactions.reduce(
+			(acc: Balance, transaction: Transaction) => {
+				if (transaction.type === 'income') {
+					acc.income += transaction.value;
+				}
+				if (transaction.type === 'outcome') {
+					acc.outcome += transaction.value;
+				}
+				acc.total = acc.income - acc.outcome;
+				return acc;
+			},
+			{
+				income: 0,
+				outcome: 0,
+				total: 0
+			}
+		);
 
 		return balance;
 	}
